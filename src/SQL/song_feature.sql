@@ -3,6 +3,7 @@ use tianchi;
 show tables;
 show table status;
 show index from mars_tianchi_songs;
+show create table mars_tianchi_songs;
 
 select * from mars_tianchi_songs group by artist_id limit 20;
 
@@ -12,3 +13,7 @@ select artist_id, count(*) from mars_tianchi_songs group by artist_id;
 
 select artist_id, count(song_id) from mars_tianchi_songs group by artist_id with rollup;
 
+select count(*) from
+	(
+		select distinct artist_id from mars_tianchi_songs
+	) a;
