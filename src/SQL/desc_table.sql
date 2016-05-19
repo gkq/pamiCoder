@@ -24,3 +24,16 @@ create table mars_tianchi_artist_plays_gt as
         where usr.action_type = 1 
     )a group by artist_id, Ds order by artist_id, Ds, song_id;
     
+
+select * from washed.song_first_action 
+	into outfile 'C:/ProgramData/MySQL/MySQL Server 5.7/Uploads/song_first_action.csv'
+    fields terminated by ','
+    optionally enclosed by '"'
+    lines terminated by '\n';
+
+#导出ground_truth文件
+select * from tianchi.mars_tianchi_artist_plays_gt 
+	into outfile 'C:/ProgramData/MySQL/MySQL Server 5.7/Uploads/ mars_tianchi_artist_plays_gt.csv'
+    fields terminated by ','
+    optionally enclosed by '"'
+    lines terminated by '\n';
