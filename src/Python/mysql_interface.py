@@ -4,7 +4,7 @@
 from sklearn.externals import joblib
 import MySQLdb as mysql
 
-def connect_database(ip='localhost',user='root', #'10.255.29.119'
+def connect_database(ip='202.120.37.4',user='root', #'10.255.29.119'
     pwd='abc123',database='tianchi'):
 
     try:
