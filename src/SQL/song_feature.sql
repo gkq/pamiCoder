@@ -32,6 +32,18 @@ create table artist_plays_perday as
         on (usr.song_id=song.song_id)
         where usr.action_type = 1 
     )a group by artist_id, Ds order by artist_id, Ds, song_id;
+    
+create table artist_plays_perday as
+	select artist_id, count(spd) as Plays, Ds from
+    (
+		select artist_id, spd, Ds from(
+		mars_tianchi_songs song left outer join 
+		(select song_id, Ds, count(*) as spd from mars_tianchi_user_actions usr
+        where usr.action_type = 1 group by song_id, Ds)a 
+        on (song.song_id=a.song_id)
+        )
+	)b group by artist_id, Ds order by artist_id, Ds;
+        
 
 select count(*) from song_plays_perday;
     
@@ -87,7 +99,7 @@ create table song_favorites_perday as
 
 #创建每首歌每天的信息表song_action_perday
 create table song_action_perday as 
-	select p.song_id,p.plays, d.downloads, f.favorites, p.Ds from song_plays_perday p  
+	select p.song_id, p.Ds, p.plays, a.downloads, a.favorites from song_plays_perday p  
     left outer join 
     (select d.song_id as song_id , downloads, favorites, d.Ds as Ds from song_downloads_perday d
     left outer join song_favorites_perday f

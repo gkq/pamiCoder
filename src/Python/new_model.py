@@ -8,11 +8,8 @@ import matplotlib.pyplot as plt
 from sklearn.externals import joblib
 import pickle
 
-filePath = 'C:/ProgramData/MySQL/MySQL Server 5.7/Uploads/song_ds_feature.csv'
-song_ds_data = pd.read_csv(filePath, header=None, encoding='utf8')
-feature_name = ['Ds','song_id','artist_id','publish_time','song_init_plays','Language',
-                'Gender','plays']#'delta_day','weekday','holiday']
-song_ds_feature = pd.DataFrame(song_ds_data.values,columns=feature_name)
+filePath = 'C:/gkq/Tianchi/song_ds_feature.csv'
+song_ds_feature = pd.read_csv(filePath, header=0, encoding='utf8')
 
 #节假日数组构建
 holidays = np.zeros(366)
@@ -24,16 +21,8 @@ holidays[170:173] = np.arange(3) + 1#端午节
 holidays[268:276] = np.arange(8) + 1#中秋节+国庆节
 
 #数据预处理
-# song_ds_feature['song_id'] = song_ds_feature['song_id'].astype('category')
-# song_ds_feature['song_id'].cat.categories = np.arange(9657)+1
-# song_ds_feature['artist_id'] = song_ds_feature['artist_id'].astype('category')
-# song_ds_feature['artist_id'].cat.categories = np.arange(50)+1
-# print(song_ds_feature.ix[:1])
-# for i in range(song_ds_feature.__len__()):
-#     song_ds_feature.ix[i,'Ds'] = datetime.strptime(song_ds_feature.ix[i, 'Ds'], '%Y-%m-%d').date()
-#     song_ds_feature.ix[i, 'publish_time'] = datetime.strptime(song_ds_feature.ix[i, 'publish_time'], '%Y-%m-%d').date()
 song_ds_feature['Ds'] = list(map(lambda s:datetime.strptime(s, '%Y-%m-%d').date(), song_ds_feature['Ds']))
-song_ds_feature['publish_time'] = list(map(lambda s:datetime.strptime(s, '%Y-%m-%d').date(), song_ds_feature['publish_time']))
+song_ds_feature['publish_time'] = list(map(lambda s:datetime.strptime(str(s), '%Y%m%d').date(), song_ds_feature['publish_time']))
 
 #基于已有数据构建新的特征
 song_ds_feature['delta_day'] =list(map(lambda t: t.days, song_ds_feature['Ds']-song_ds_feature['publish_time']))
@@ -48,15 +37,19 @@ song_ds_feature['song_init_plays'] = (song_ds_feature['song_init_plays'] - min(s
 song_ds_feature['delta_day'] = (song_ds_feature['delta_day'] - min(song_ds_feature['delta_day'])) / max(song_ds_feature['delta_day'])
 song_ds_feature['Language'] = (song_ds_feature['Language'] - min(song_ds_feature['Language'])) / max(song_ds_feature['Language'])
 
+
 test_day = date(2015,7,1) #训练数据和测试数据分割点
 test_day2 = date(2015,7,1)
 train_data = song_ds_feature[song_ds_feature['Ds']<test_day]
 test_data = song_ds_feature[song_ds_feature['Ds']>=test_day2]
 
-X_train = train_data[['song_init_plays','Language','Gender','delta_day','weekday','isholiday','idxholiday']].values #'song_id','artist_id',
+X_train = train_data[['song_init_plays','Language','Gender','downloads_mean','favorites_mean','plays_mean','downloads', 'favorites',
+                      'delta_day','weekday','isholiday','idxholiday']].values #'song_id','artist_id',
 y_train = train_data['plays'].values
-X_test = test_data[['song_init_plays','Language','Gender','delta_day','weekday','isholiday','idxholiday']].values
+X_test = test_data[['song_init_plays','Language','Gender', 'downloads_mean','favorites_mean','plays_mean','downloads', 'favorites',
+                    'delta_day','weekday','isholiday','idxholiday']].values
 y_test = test_data['plays'].values
+
 
 #训练模型和预测结果
 # Create linear regression object
@@ -66,6 +59,7 @@ regr = linear_model.LinearRegression()
 
 # regr = linear_model.Lasso( alpha=0)
 regr.fit(X_train, y_train)
+del song_ds_feature, X_train, y_train #释放内存
 result = regr.predict(X_test)
 
 # regr = RandomForestClassifier()

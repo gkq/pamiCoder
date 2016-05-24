@@ -6,6 +6,7 @@ from datetime import datetime, date
 gt_file = 'C:\gkq\Tianchi\mars_tianchi_artist_plays_gt.csv'
 #predict_result
 test_file = 'C:\gkq\Tianchi\mars_tianchi_artist_plays_predict.csv'
+#test_file = 'C:\gkq\Tianchi\\test\mars_tianchi_artist_plays_predict_offline_60_stlfnaive.csv'
 gt_df = pd.read_csv(gt_file, header=None, encoding='utf8')
 test_df = pd.read_csv(test_file, header=None)
 
@@ -30,7 +31,7 @@ test_df[2] = list(map(lambda s:datetime.strptime(s, '%Y-%m-%d').date(), test_df[
 # for i in range(50):
 #     singer1 = gt_df[gt_df.iloc[:,0]==i+1]
 #     singer1.iloc[:,1].plot(use_index=False)
-test_df = gt_df #使用真实数据自己测试
+#test_df = gt_df #使用真实数据自己测试
 start_date = date(2015,7,1)
 end_date = date(2015,8,30)
 # start_date = min(test_df[2])
